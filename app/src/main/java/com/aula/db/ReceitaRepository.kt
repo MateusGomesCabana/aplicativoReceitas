@@ -13,12 +13,11 @@ class ReceitaRepository(val context: Context) {
         val receitas = ArrayList<Receita>()
 
         select(RECEITAS_DB_NAME, "id",
-            "email",
-            "endereco",
             "nome",
-            "telefone",
-            "datanascimento",
-            "site",
+            "autor",
+            "ingredientes",
+            "modoPreparo",
+            "data",
             "foto")
             .parseList(object: MapRowParser<List<Receita>> {
                 override fun parseRow(columns: Map<String, Any?>): List<Receita> {
@@ -26,11 +25,10 @@ class ReceitaRepository(val context: Context) {
                         id = columns.getValue("id").toString()?.toLong(),
                         foto = columns.getValue("foto")?.toString(),
                         nome = columns.getValue("nome")?.toString(),
-                        endereco = columns.getValue("endereco")?.toString(),
-                        telefone = columns.getValue("telefone")?.toString()?.toLong(),
-                        dataNascimento = columns.getValue("datanascimento")?.toString()?.toLong(),
-                        email = columns.getValue("email")?.toString(),
-                        site = columns.getValue("site")?.toString()))
+                        autor = columns.getValue("autor")?.toString(),
+                        ingredientes = columns.getValue("ingredientes")?.toString(),
+                        modopreparo = columns.getValue("modopreparo")?.toString(),
+                        data = columns.getValue("data")?.toString()?.toLong()))
                     return receitas
                 }
             })
@@ -42,21 +40,20 @@ class ReceitaRepository(val context: Context) {
         insert(RECEITAS_DB_NAME,
             "foto" to receita.foto,
             "nome" to receita.nome,
-            "endereco" to receita.endereco,
-            "telefone" to receita.telefone,
-            "email" to receita.email,
-            "site" to receita.site,
-            "dataNascimento" to receita.dataNascimento)
+            "autor" to receita.autor,
+            "ingredientes" to receita.ingredientes,
+            "modoPreparo" to receita.modopreparo,
+            "data" to receita.data)
     }
 
     fun update(receita: Receita) = context.database.use {
         val updateResult = update(RECEITAS_DB_NAME,
             "foto" to receita.foto,
             "nome" to receita.nome,
-            "endereco" to receita.endereco,
-            "telefone" to receita.telefone,
-            "email" to receita.email,
-            "site" to receita.site)
+            "autor" to receita.autor,
+            "ingredientes" to receita.ingredientes,
+            "modopreparo" to receita.modopreparo,
+            "data" to receita.data)
             .whereArgs("id = {id}","id" to receita.id).exec()
         Timber.d("Update result code is $updateResult")
     }
@@ -73,23 +70,21 @@ class ReceitaRepository(val context: Context) {
             .parseList(object: MapRowParser<List<Receita>> {
                 override fun parseRow(columns: Map<String, Any?>): List<Receita> {
                     val id = columns.getValue("id")
-                    val email = columns.getValue("email")
-                    val endereco = columns.getValue("endereco")
                     val nome = columns.getValue("nome")
-                    val telefone = columns.getValue("telefone")
-                    val datanascimento = columns.getValue("datanascimento")
-                    val site = columns.getValue("site")
+                    val autor = columns.getValue("autor")
+                    val ingredientes = columns.getValue("ingredientes")
+                    val modopreparo = columns.getValue("modopreparo")
+                    val data = columns.getValue("data")
                     val foto = columns.getValue("foto")
 
                     receitas.add(Receita(
                         id.toString()?.toLong(),
                         foto?.toString(),
                         nome?.toString(),
-                        endereco?.toString(),
-                        telefone?.toString()?.toLong(),
-                        datanascimento?.toString()?.toLong(),
-                        email?.toString(),
-                        site?.toString()))
+                        autor?.toString(),
+                        ingredientes?.toString(),
+                        modopreparo?.toString(),
+                        data?.toString()?.toLong()))
                     return receitas
                 }
             })

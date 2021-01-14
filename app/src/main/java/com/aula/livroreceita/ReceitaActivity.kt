@@ -1,20 +1,21 @@
 package com.aula.livroreceita
 import android.app.DatePickerDialog
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.DatePicker
+import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.aula.db.Receita
 import com.aula.db.ReceitaRepository
 import kotlinx.android.synthetic.main.activity_receita.*
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class ReceitaActivity : AppCompatActivity() {
     var cal = Calendar.getInstance()
-
+    var count = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_receita)
@@ -46,17 +47,25 @@ class ReceitaActivity : AppCompatActivity() {
         btnCadastro.setOnClickListener{
             val receita = Receita(
                     nome = txtNome.text?.toString(),
-                    endereco = txtEndereco.text?.toString(),
-                    email = txtEmail.text?.toString(),
-                    telefone = txtTelefone.text?.toString()?.toLong(),
-                    dataNascimento = cal.timeInMillis,
-                    site = txtSite.text?.toString()
+                    autor = txtEndereco.text?.toString(),
+                    ingredientes = txtIngreditente.text?.toString(),
+                    modopreparo = editTextTextMultiLine.text?.toString(),
+                    data = cal.timeInMillis
             )
             ReceitaRepository(this).create(receita)
             Toast.makeText(this, "Receita incluido", Toast.LENGTH_LONG).show()
             finish()
+
+
 //            var dados = "[${txtNome.text} : ${txtEndereco.text} : ${txtEmail.text} : ${txtTelefone.text} : ${txtSite.text} : ${txtDatanascimento.text}]"
 //            Toast.makeText(this, dados, Toast.LENGTH_LONG).show()
+        }
+        btnAddIngreditentes.setOnClickListener{
+            count++
+            val layout = linear
+            val editTextOne = EditText(this)
+            editTextOne.setId(count)
+            layout.addView(editTextOne);
         }
     }
 
