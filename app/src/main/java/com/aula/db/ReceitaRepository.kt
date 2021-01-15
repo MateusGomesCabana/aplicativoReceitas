@@ -91,4 +91,16 @@ class ReceitaRepository(val context: Context) {
 
         receitas
     }
+
+    fun isContato(telefone: String) : Boolean = context.database.use {
+        select(RECEITAS_DB_NAME, "count(*) as total")
+                .whereArgs("telefone = {telefone}","telefone" to telefone)
+                .parseSingle(object: MapRowParser<Boolean> {
+                    override fun parseRow(columns: Map<String, Any?>): Boolean {
+                        val total = columns.getValue("total")
+                        return total.toString().toInt() > 0;
+                    }
+                })
+    }
+
 }

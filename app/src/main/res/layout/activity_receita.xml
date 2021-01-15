@@ -151,7 +151,7 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/editTextTextMultiLine"
+                    android:id="@+id/txtModoPreparo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:ems="10"

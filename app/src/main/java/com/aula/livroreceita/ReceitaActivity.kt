@@ -1,4 +1,5 @@
 package com.aula.livroreceita
+
 import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.View
@@ -16,6 +17,10 @@ import java.util.*
 class ReceitaActivity : AppCompatActivity() {
     var cal = Calendar.getInstance()
     var count = 1
+    private val myFormat = "dd/MM/yyyy : HH:mm:ss" // mention the format you need
+    private val sdf = SimpleDateFormat(myFormat, Locale.US)
+    private var receita: Receita? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_receita)
@@ -44,23 +49,30 @@ class ReceitaActivity : AppCompatActivity() {
             }
         })
 
-        btnCadastro.setOnClickListener{
-            val receita = Receita(
-                    nome = txtNome.text?.toString(),
-                    autor = txtEndereco.text?.toString(),
-                    ingredientes = txtIngreditente.text?.toString(),
-                    modopreparo = editTextTextMultiLine.text?.toString(),
-                    data = cal.timeInMillis
-            )
-            ReceitaRepository(this).create(receita)
-            Toast.makeText(this, "Receita incluido", Toast.LENGTH_LONG).show()
+        btnCadastro.setOnClickListener {
+
+            receita?.nome = txtNome.text?.toString()
+            receita?.autor = txtEndereco.text?.toString()
+            receita?.ingredientes = txtIngreditente.text?.toString()
+            receita?.modopreparo = txtModoPreparo.text?.toString()
+            receita?.data = cal.timeInMillis
+
+            if (receita?.id == 0L) {
+                ReceitaRepository(this).create(receita!!)
+            } else {
+                ReceitaRepository(this).update(receita!!)
+            }
+
+
+            //  ReceitaRepository(this).create(receita)
+           // Toast.makeText(this, "Receita incluido", Toast.LENGTH_LONG).show()
             finish()
 
 
 //            var dados = "[${txtNome.text} : ${txtEndereco.text} : ${txtEmail.text} : ${txtTelefone.text} : ${txtSite.text} : ${txtDatanascimento.text}]"
 //            Toast.makeText(this, dados, Toast.LENGTH_LONG).show()
         }
-        btnAddIngreditentes.setOnClickListener{
+        btnAddIngreditentes.setOnClickListener {
             count++
             val layout = linear
             val editTextOne = EditText(this)
@@ -70,17 +82,28 @@ class ReceitaActivity : AppCompatActivity() {
     }
 
     private fun updateDateInView() {
-        val myFormat = "dd/MM/yyyy : HH:mm:ss" // mention the format you need
-        val sdf = SimpleDateFormat(myFormat, Locale.US)
+
         txtDatanascimento.text = sdf.format(cal.getTime())
     }
-//
+
+    //
     override fun onResume() {
         super.onResume()
-        val receita = intent?.getSerializableExtra("receita")
-        if(receita != null){
+        receita = intent?.getSerializableExtra("receita") as Receita?
+        if (receita != null) {
             receita as Receita
             txtNome.setText(receita?.nome)
+            txtEndereco.setText(receita?.autor)
+            txtEndereco.setText(receita?.autor)
+            txtIngreditente.setText(receita?.ingredientes)
+            txtModoPreparo.setText(receita?.modopreparo)
+            if (receita!!.data != null) {
+                txtDatanascimento.text = sdf.format(receita?.data)
+            } else {
+                txtDatanascimento.text = sdf.format(Date())
+            }
+        }else{
+            receita = Receita()
         }
 
     }
