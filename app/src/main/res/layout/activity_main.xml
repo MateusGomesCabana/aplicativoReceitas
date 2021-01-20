@@ -11,11 +11,17 @@
         android:background="@android:color/holo_orange_dark"
         android:minHeight="?attr/actionBarSize" />
 
+    <com.baoyz.swipemenulistview.SwipeMenuListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lista">
 
-    <ListView
-        android:id="@+id/lista"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-    </ListView>
+    </com.baoyz.swipemenulistview.SwipeMenuListView>
+
+<!--    <ListView-->
+<!--        android:id="@+id/lista"-->
+<!--        android:layout_width="fill_parent"-->
+<!--        android:layout_height="fill_parent" >-->
+<!--    </ListView>-->
 
 </LinearLayout>

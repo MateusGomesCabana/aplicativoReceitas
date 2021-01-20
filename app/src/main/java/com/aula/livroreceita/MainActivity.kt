@@ -1,14 +1,11 @@
 package com.aula.livroreceita
 
 import android.content.BroadcastReceiver
-import android.Manifest
 import android.content.Intent
-import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
@@ -17,14 +14,16 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
 import com.aula.db.Receita
 import com.aula.db.ReceitaRepository
+import com.baoyz.swipemenulistview.SwipeMenu
+import com.baoyz.swipemenulistview.SwipeMenuCreator
+import com.baoyz.swipemenulistview.SwipeMenuItem
+import com.baoyz.swipemenulistview.SwipeMenuListView
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,11 +35,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // val contatos = arrayOf("Maria", "José", "Carlos")
-//        val contatos = ContatoRepository(this).findAll()
-//        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, contatos)
-//        var listaContatos = lista
-//        listaContatos.setAdapter(adapter);
         toolbar.setTitleTextColor(Color.WHITE)
         setSupportActionBar(toolbar)
         lista.setOnItemClickListener { _, _, position, id ->
@@ -49,15 +43,39 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
 
         }
+
+
         lista.onItemLongClickListener = AdapterView.OnItemLongClickListener { _, _, posicao, _ ->
             receitaSelecionado = receitas?.get(posicao)
             Toast.makeText(this, "Excluido", Toast.LENGTH_LONG).show()
             false
         }
-        setupPermissions()
-        configureReceiver()
 
-
+        lista.setOnMenuItemClickListener(SwipeMenuListView.OnMenuItemClickListener { position, menu, index ->
+            Toast.makeText(this, "$position", Toast.LENGTH_LONG).show()
+            when (index) {
+                //editar
+                0 -> {
+                     val intent = Intent(this@MainActivity, ReceitaActivity::class.java)
+                     intent.putExtra("receita", receitas?.get(position))
+                     startActivity(intent)
+                }
+                //deletar
+                1 -> {
+                    AlertDialog.Builder(this@MainActivity)
+                        .setIcon(android.R.drawable.ic_dialog_info)
+                        .setTitle("Deletar")
+                        .setMessage("Deseja mesmo deletar ?")
+                        .setPositiveButton("Quero"
+                        ) { _, _ ->
+                            ReceitaRepository(this).delete(receitas?.get(position)!!.id)
+                            carregaLista()
+                        }.setNegativeButton("Nao", null).show()
+                }
+            }
+            // false : close the menu; true : not close the menu
+            false
+        })
     }
 
     override fun onCreateContextMenu( menu: ContextMenu?, v: View?, menuInfo: ContextMenu.ContextMenuInfo?) {
@@ -77,14 +95,6 @@ class MainActivity : AppCompatActivity() {
                             ReceitaRepository(this).delete(this.receitaSelecionado!!.id)
                             carregaLista()
                         }.setNegativeButton("Nao", null).show()
-                return false
-            }
-            R.id.enviasms -> {
-                val intentSms = Intent(Intent.ACTION_VIEW)
-                intentSms.flags = Intent.FLAG_ACTIVITY_NEW_TASK;
-                intentSms.data = Uri.parse("sms:" + receitaSelecionado?.autor)
-                intentSms.putExtra("sms_body", "Mensagem")
-                item.intent = intentSms
                 return false
             }
 
@@ -108,23 +118,6 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
 
-            R.id.ligar -> {
-                val intentLigar = Intent(Intent.ACTION_DIAL)
-                intentLigar.flags = Intent.FLAG_ACTIVITY_NEW_TASK;
-                intentLigar.data = Uri.parse("tel:32225449" )
-                item.intent = intentLigar
-                return false
-            }
-
-            R.id.visualizarmapa -> {
-                //val gmmIntentUri = Uri.parse("geo:0,0?q=" + receitaSelecionado?.endereco)
-                val gmmIntentUri = Uri.parse("geo:0,0?q= R. Antônio Alves, 25-28 " )
-                val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-                mapIntent.setPackage("com.google.android.apps.maps")
-                startActivity(mapIntent)
-                return false
-            }
-
 
 
             else -> return super.onContextItemSelected(item)
@@ -136,7 +129,6 @@ class MainActivity : AppCompatActivity() {
         inflater.inflate(R.menu.menu, menu)
         return true
     }
-
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
@@ -173,48 +165,56 @@ class MainActivity : AppCompatActivity() {
 
     private fun carregaLista() {
         receitas = ReceitaRepository(this).findAll()
-        val adapter= ArrayAdapter(this, android.R.layout.simple_list_item_1, receitas!!)
+      //  val adapter= ArrayAdapter(this, android.R.layout.simple_list_item_1, receitas!!)
+        val adapter = ListaReceitaAdapater(applicationContext, receitas!!, assets)
         lista?.adapter = adapter
         adapter.notifyDataSetChanged()
+
+       // val adapter = ListaReceitaAdapater(applicationContext, receitas!!, assets)
+        //lista.adapter = adapter
     }
 
 
     override fun onResume() {
-//        super.onResume()
-//        val contatos = ContatoRepository(this).findAll()
-//        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, contatos)
-//        var listaContatos = lista
-//        listaContatos.setAdapter(adapter);
         super.onResume()
         receitas = ReceitaRepository(this).findAll()
         if(receitas != null){
-            lista.adapter = ArrayAdapter(this,
-                    android.R.layout.simple_list_item_1,receitas!!)
+            val adapter = ListaReceitaAdapater(applicationContext, receitas!!, assets)
+            lista.adapter = adapter
+            //swipe das linhas
+            val creator: SwipeMenuCreator = object : SwipeMenuCreator {
+                override fun create(menu: SwipeMenu) {
+                    // cria a opção de editar item
+                    val openItem = SwipeMenuItem(applicationContext)
+                    // set item background
+                    openItem.setBackground(ColorDrawable(Color.rgb(0x00, 0x66,0xff)))
+                    // set item width
+                    openItem.setWidth(170)
+                    // set item title
+                    openItem.setTitle("Editar")
+                    // set item title fontsize
+                    openItem.setTitleSize(18)
+                    // set item title font color
+                    openItem.setTitleColor(Color.WHITE)
+                    // add to menu
+                    menu.addMenuItem(openItem)
+
+                    // cria a opção de deletar item
+                    val deleteItem = SwipeMenuItem(applicationContext)
+                    // background
+                    deleteItem.setBackground(ColorDrawable(Color.rgb(0xF9,0x3F,0x25)))
+                    // largura
+                    deleteItem.setWidth(170)
+                    deleteItem.setTitle("Deletar")
+                    // icone
+                    deleteItem.setIcon(R.drawable.ic_receber)
+                    // add to menu
+                    menu.addMenuItem(deleteItem)
+                }
+            }
+            lista.setMenuCreator(creator)
         }
         registerForContextMenu(lista);
     }
-    private fun setupPermissions() {
 
-        val list = listOf<String>(
-            Manifest.permission.RECEIVE_SMS
-        )
-
-        ActivityCompat.requestPermissions(this,
-            list.toTypedArray(), MY_PERMISSIONS_REQUEST_SMS_RECEIVE);
-
-        val permission = ContextCompat.checkSelfPermission(this,
-            Manifest.permission.READ_SMS)
-
-        if (permission != PackageManager.GET_SERVICES) {
-            Log.i("aula", "Permission to record denied")
-        }
-    }
-
-    private fun configureReceiver() {
-        val filter = IntentFilter()
-        filter.addAction("com.aula.livroreceita")
-        filter.addAction("android.provider.Telephony.SMS_RECEIVED")
-        receiver = SMSReceiver()
-        registerReceiver(receiver, filter)
-    }
 }

@@ -13,12 +13,13 @@ class ReceitaRepository(val context: Context) {
         val receitas = ArrayList<Receita>()
 
         select(RECEITAS_DB_NAME, "id",
+            "foto",
             "nome",
             "autor",
+            "email",
+            "descricao",
             "ingredientes",
-            "modoPreparo",
-            "data",
-            "foto")
+            "modoPreparo")
             .parseList(object: MapRowParser<List<Receita>> {
                 override fun parseRow(columns: Map<String, Any?>): List<Receita> {
                     receitas.add(Receita(
@@ -26,9 +27,10 @@ class ReceitaRepository(val context: Context) {
                         foto = columns.getValue("foto")?.toString(),
                         nome = columns.getValue("nome")?.toString(),
                         autor = columns.getValue("autor")?.toString(),
+                        email = columns.getValue("email")?.toString(),
+                        descricao = columns.getValue("descricao")?.toString(),
                         ingredientes = columns.getValue("ingredientes")?.toString(),
-                        modopreparo = columns.getValue("modopreparo")?.toString(),
-                        data = columns.getValue("data")?.toString()?.toLong()))
+                        modopreparo = columns.getValue("modopreparo")?.toString()))
                     return receitas
                 }
             })
@@ -41,9 +43,10 @@ class ReceitaRepository(val context: Context) {
             "foto" to receita.foto,
             "nome" to receita.nome,
             "autor" to receita.autor,
+            "email" to receita.email,
+            "descricao" to receita.descricao,
             "ingredientes" to receita.ingredientes,
-            "modoPreparo" to receita.modopreparo,
-            "data" to receita.data)
+            "modoPreparo" to receita.modopreparo)
     }
 
     fun update(receita: Receita) = context.database.use {
@@ -51,9 +54,10 @@ class ReceitaRepository(val context: Context) {
             "foto" to receita.foto,
             "nome" to receita.nome,
             "autor" to receita.autor,
+            "email" to receita.email,
+            "descricao" to receita.descricao,
             "ingredientes" to receita.ingredientes,
-            "modopreparo" to receita.modopreparo,
-            "data" to receita.data)
+            "modopreparo" to receita.modopreparo)
             .whereArgs("id = {id}","id" to receita.id).exec()
         Timber.d("Update result code is $updateResult")
     }
@@ -70,37 +74,28 @@ class ReceitaRepository(val context: Context) {
             .parseList(object: MapRowParser<List<Receita>> {
                 override fun parseRow(columns: Map<String, Any?>): List<Receita> {
                     val id = columns.getValue("id")
+                    val foto = columns.getValue("foto")
                     val nome = columns.getValue("nome")
                     val autor = columns.getValue("autor")
+                    val email = columns.getValue("email")
+                    val descricao = columns.getValue("descricao")
                     val ingredientes = columns.getValue("ingredientes")
                     val modopreparo = columns.getValue("modopreparo")
-                    val data = columns.getValue("data")
-                    val foto = columns.getValue("foto")
+
 
                     receitas.add(Receita(
                         id.toString()?.toLong(),
                         foto?.toString(),
                         nome?.toString(),
                         autor?.toString(),
+                        email?.toString(),
+                        descricao?.toString(),
                         ingredientes?.toString(),
-                        modopreparo?.toString(),
-                        data?.toString()?.toLong()))
+                        modopreparo?.toString()))
                     return receitas
                 }
             })
 
         receitas
     }
-
-    fun isContato(telefone: String) : Boolean = context.database.use {
-        select(RECEITAS_DB_NAME, "count(*) as total")
-                .whereArgs("telefone = {telefone}","telefone" to telefone)
-                .parseSingle(object: MapRowParser<Boolean> {
-                    override fun parseRow(columns: Map<String, Any?>): Boolean {
-                        val total = columns.getValue("total")
-                        return total.toString().toInt() > 0;
-                    }
-                })
-    }
-
 }
