@@ -57,7 +57,7 @@ class ListaReceitaAdapater(context: Context, receitas: ArrayList<Receita>, asset
         try {
             return BitmapFactory.decodeStream(FileInputStream(f), null, options)
         } catch (e: FileNotFoundException) {
-            istr = assetManager.open("images/face_error.jpg")
+            istr = assetManager.open("images/face_error.png")
             return BitmapFactory.decodeStream(istr)
         }
      //   return bitmap!!

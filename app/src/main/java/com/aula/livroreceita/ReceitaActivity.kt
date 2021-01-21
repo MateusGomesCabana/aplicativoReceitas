@@ -37,30 +37,50 @@ class ReceitaActivity : AppCompatActivity() {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         btnCadastro.setOnClickListener {
-            receita?.foto = mCurrentPhotoPath
-            receita?.nome = txtNome.text?.toString()
-            receita?.autor = txtAutor.text?.toString()
-            receita?.email = txtEmail.text?.toString()
-            receita?.descricao = txtDescricao.text?.toString()
             var text = txtIngreditente.text?.toString()
             for (i in 0..(editTexts.size-1)){
                 if (editTexts.get(i).text.isNotEmpty()){
                     text = "${text};${editTexts.get(i).text}"
                 }
             }
-            receita?.ingredientes = text
-            receita?.modopreparo = txtModoPreparo.text?.toString()
+            if(txtNome.text?.toString()?.isEmpty()!!){
+                Toast.makeText(this, "Por favor insira o nome da receita", Toast.LENGTH_LONG).show()
+            }else if(txtAutor.text?.toString()?.isEmpty()!!){
+                Toast.makeText(this, "Por favor insira o nome do autor", Toast.LENGTH_LONG).show()
+            }else if(txtEmail.text?.toString()?.isEmpty()!!){
+                Toast.makeText(this, "Por favor insira o email do autor", Toast.LENGTH_LONG).show()
+            }else if(txtDescricao.text?.toString()?.isEmpty()!!){
+                Toast.makeText(this, "Por favor insira a descrição da receita", Toast.LENGTH_LONG).show()
+            }else if(text?.isEmpty()!!){
+                Toast.makeText(this, "Por favor insira ao menos um ingrediente", Toast.LENGTH_LONG).show()
+            }else if(txtModoPreparo.text?.toString()?.isEmpty()!!){
+                Toast.makeText(this, "Por favor insira o modo de preparo", Toast.LENGTH_LONG).show()
+            }else{
+                receita?.foto = mCurrentPhotoPath
+                receita?.nome = txtNome.text?.toString()
+                receita?.autor = txtAutor.text?.toString()
+                receita?.email = txtEmail.text?.toString()
+                receita?.descricao = txtDescricao.text?.toString()
 
-            if (receita?.id == 0L) {
-                ReceitaRepository(this).create(receita!!)
-            } else {
-                ReceitaRepository(this).update(receita!!)
+                receita?.ingredientes = text
+                receita?.modopreparo = txtModoPreparo.text?.toString()
+
+                if (receita?.id == 0L) {
+                    ReceitaRepository(this).create(receita!!)
+                    Toast.makeText(this, "Receita incluido", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(this, "Receita Atualizada", Toast.LENGTH_LONG).show()
+                    ReceitaRepository(this).update(receita!!)
+                }
+
+
+                //  ReceitaRepository(this).create(receita)
+                //
+                finish()
             }
 
 
-            //  ReceitaRepository(this).create(receita)
-           // Toast.makeText(this, "Receita incluido", Toast.LENGTH_LONG).show()
-            finish()
+
 
 
 //            var dados = "[${txtNome.text} : ${txtEndereco.text} : ${txtEmail.text} : ${txtTelefone.text} : ${txtSite.text} : ${txtDatanascimento.text}]"

@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         toolbar.setTitleTextColor(Color.WHITE)
         setSupportActionBar(toolbar)
         lista.setOnItemClickListener { _, _, position, id ->
-            val intent = Intent(this@MainActivity, ReceitaActivity::class.java)
+            val intent = Intent(this@MainActivity, ViewActivity::class.java)
             intent.putExtra("receita", receitas?.get(position))
             startActivity(intent)
 
@@ -101,23 +101,13 @@ class MainActivity : AppCompatActivity() {
             R.id.enviaemail -> {
                 val intentEmail = Intent(Intent.ACTION_SEND)
                 intentEmail.type = "message/rfc822"
-                intentEmail.putExtra(Intent.EXTRA_EMAIL, arrayOf<String>(receitaSelecionado?.autor!!))
-                intentEmail.putExtra(Intent.EXTRA_SUBJECT, "Teste de email")
+                intentEmail.putExtra(Intent.EXTRA_EMAIL, arrayOf<String>(receitaSelecionado?.email!!))
+                intentEmail.putExtra(Intent.EXTRA_SUBJECT, "Mensagem para o autor")
                 intentEmail.putExtra(Intent.EXTRA_TEXT, "Corpo da mensagem")
                 //item.setIntent(intentEmail);
                 startActivity(Intent.createChooser(intentEmail, "Selecione a sua aplicação de Email"))
                 return false
             }
-
-            R.id.share -> {
-                val intentShare = Intent(Intent.ACTION_SEND)
-                intentShare.type = "text/plain"
-                intentShare.putExtra(Intent.EXTRA_SUBJECT, "Assunto que será compartilhado")
-                intentShare.putExtra(Intent.EXTRA_TEXT, "Texto que será compartilhado")
-                startActivity(Intent.createChooser(intentShare, "Escolha como compartilhar"))
-                return false
-            }
-
 
 
             else -> return super.onContextItemSelected(item)
@@ -133,7 +123,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.novo -> {
-                val intent = Intent(this, ReceitaActivity::class.java)
+                val intent = Intent(this, ViewActivity::class.java)
                 startActivity(intent)
                 return false
 
