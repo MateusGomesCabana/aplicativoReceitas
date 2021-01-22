@@ -12,4 +12,5 @@
     <string name="title_activity_receitas">Receitas</string>
     <string name="title_activity_view">ViewActivity</string>
     <string name="title_activity_main2">MainActivity</string>
+    <string name="title_activity_grid">GridActivity</string>
 </resources>

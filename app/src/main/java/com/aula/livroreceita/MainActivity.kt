@@ -52,7 +52,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         lista.setOnMenuItemClickListener(SwipeMenuListView.OnMenuItemClickListener { position, menu, index ->
-            Toast.makeText(this, "$position", Toast.LENGTH_LONG).show()
             when (index) {
                 //editar
                 0 -> {
@@ -123,7 +122,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.novo -> {
-                val intent = Intent(this, ViewActivity::class.java)
+                val intent = Intent(this, ReceitaActivity::class.java)
                 startActivity(intent)
                 return false
 
@@ -145,8 +144,10 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.preferencias -> {
-                Toast.makeText(this, "Preferencias", Toast.LENGTH_LONG).show()
+                val intent = Intent(this, testeActivity::class.java)
+                startActivity(intent)
                 return false
+
             }
 
             else -> return super.onOptionsItemSelected(item)
