@@ -3,6 +3,7 @@ package com.aula.livroreceita
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.os.Bundle
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -21,7 +22,10 @@ class ViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         //setContentView(R.layout.activity_view)
         setContentView(R.layout.activity_receita)
-        setSupportActionBar(findViewById(R.id.toolbar))
+        toolbarView.setTitleTextColor(Color.WHITE)
+        setSupportActionBar(toolbarView)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+
         buttonEnviarEmail.setOnClickListener{
             val intentEmail = Intent(Intent.ACTION_SEND)
             intentEmail.type = "message/rfc822"
@@ -48,7 +52,7 @@ class ViewActivity : AppCompatActivity() {
             var text = ""
             if (strs != null) {
                 for (i in 0..(strs.size-1)){
-                    text = strs.get(i).toString() + "\n"
+                    text = text + strs.get(i).toString() + "\n"
                 }
             }
             ingredientes.setText(text)

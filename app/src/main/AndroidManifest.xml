@@ -16,19 +16,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LivroReceita.NoActionBar">
-        <activity android:name=".testeActivity"></activity>
-        <activity
-            android:name=".GridActivity"
-            android:label="@string/title_activity_grid"
-            android:theme="@style/Theme.LivroReceita.NoActionBar.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
+        <activity android:name=".gridActivity"></activity>
         <activity
             android:name=".ViewActivity"
             android:label="@string/title_activity_view"
-            android:theme="@style/Theme.LivroReceita.NoActionBar.NoActionBar" />
+            android:theme="@style/Theme.LivroReceita.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+
+        </activity>
         <activity android:name=".ReceitaActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

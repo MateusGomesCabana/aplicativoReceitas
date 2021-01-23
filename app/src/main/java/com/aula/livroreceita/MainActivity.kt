@@ -4,18 +4,14 @@ import android.content.BroadcastReceiver
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.net.Uri
 import android.os.Bundle
 import android.view.ContextMenu
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
 import com.aula.db.Receita
 import com.aula.db.ReceitaRepository
 import com.baoyz.swipemenulistview.SwipeMenu
@@ -29,25 +25,19 @@ class MainActivity : AppCompatActivity() {
 
     private var receitas:ArrayList<Receita>? = null
     private var receitaSelecionado:Receita? = null
-    val MY_PERMISSIONS_REQUEST_SMS_RECEIVE = 10
     var receiver: BroadcastReceiver? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         toolbar.setTitleTextColor(Color.WHITE)
         setSupportActionBar(toolbar)
         lista.setOnItemClickListener { _, _, position, id ->
             val intent = Intent(this@MainActivity, ViewActivity::class.java)
             intent.putExtra("receita", receitas?.get(position))
             startActivity(intent)
-
         }
-
-
         lista.onItemLongClickListener = AdapterView.OnItemLongClickListener { _, _, posicao, _ ->
             receitaSelecionado = receitas?.get(posicao)
-            Toast.makeText(this, "Excluido", Toast.LENGTH_LONG).show()
             false
         }
 
@@ -107,7 +97,12 @@ class MainActivity : AppCompatActivity() {
                 startActivity(Intent.createChooser(intentEmail, "Selecione a sua aplicação de Email"))
                 return false
             }
-
+            R.id.editarItem -> {
+                val intent = Intent(this@MainActivity, ReceitaActivity::class.java)
+                intent.putExtra("receita", receitaSelecionado)
+                startActivity(intent)
+                return false
+            }
 
             else -> return super.onContextItemSelected(item)
         }
@@ -128,23 +123,8 @@ class MainActivity : AppCompatActivity() {
 
             }
 
-            R.id.sincronizar -> {
-                Toast.makeText(this, "Enviar", Toast.LENGTH_LONG).show()
-                return false
-            }
-
-            R.id.receber -> {
-                Toast.makeText(this, "Receber", Toast.LENGTH_LONG).show()
-                return false
-            }
-
-            R.id.mapa -> {
-                Toast.makeText(this, "Mapa", Toast.LENGTH_LONG).show()
-                return false
-            }
-
-            R.id.preferencias -> {
-                val intent = Intent(this, testeActivity::class.java)
+            R.id.layout -> {
+                val intent = Intent(this, gridActivity::class.java)
                 startActivity(intent)
                 return false
 
@@ -196,9 +176,12 @@ class MainActivity : AppCompatActivity() {
                     deleteItem.setBackground(ColorDrawable(Color.rgb(0xF9,0x3F,0x25)))
                     // largura
                     deleteItem.setWidth(170)
+                    //seta o title
                     deleteItem.setTitle("Deletar")
-                    // icone
-                    deleteItem.setIcon(R.drawable.ic_receber)
+                    // set item title fontsize
+                    deleteItem.setTitleSize(18)
+                    // set item title font color
+                    deleteItem.setTitleColor(Color.WHITE)
                     // add to menu
                     menu.addMenuItem(deleteItem)
                 }

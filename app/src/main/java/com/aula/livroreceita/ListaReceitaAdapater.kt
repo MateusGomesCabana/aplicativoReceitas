@@ -42,6 +42,7 @@ class ListaReceitaAdapater(context: Context, receitas: ArrayList<Receita>, asset
         val receita = this.receitas[position]
         val view = this.inflator.inflate(R.layout.activity_linha, parent, false)
         view.nome.text = receita.nome
+        view.desc.text = receita.descricao
         var img = readBitmapFile(receita.foto.toString())
         view.foto.setImageBitmap(img)
         return view
